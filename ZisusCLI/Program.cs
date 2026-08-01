@@ -10,6 +10,10 @@ namespace ZisusCLI {
 			switch (command) {
 				case "amigos":
 					return new Commands.Amigos().Run();
+				case "balanced":
+					return new Commands.Balanced().Run();
+				case "extend":
+					return new Commands.Extend().Run();
 				default:
 					await Console.Out.WriteLineAsync($"Unknown command: {command}");
 					return 1;
