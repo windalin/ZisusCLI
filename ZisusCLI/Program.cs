@@ -15,7 +15,7 @@ namespace ZisusCLI {
 				case "extend":			 return new Commands.SetDisplayMode(3).Run();
 				case "inputswitch":		 return new Commands.InputSwitch().Run();
 				case "psaver":			 return new Commands.SetPowerPlan(3).Run();
-				case "secondscreenonly": return new Commands.SetDisplayMode(1).Run();
+				case "secondscreenonly": return new Commands.SetDisplayMode(1).Run(); // windows main screen is physical second screen bc i dont want to change cable ports
 				case "userchromeopen":   return new Commands.OpenUserChrome().Run();
 				case "volfix":			 return new Commands.VolFix().Run();
 				case "weather":			 return new Commands.Weather().Run();
