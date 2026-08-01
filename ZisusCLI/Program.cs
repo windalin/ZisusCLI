@@ -14,6 +14,8 @@ namespace ZisusCLI {
 					return new Commands.Balanced().Run();
 				case "extend":
 					return new Commands.Extend().Run();
+				case "inputswitch":
+					return new Commands.InputSwitch().Run();
 				default:
 					await Console.Out.WriteLineAsync($"Unknown command: {command}");
 					return 1;
