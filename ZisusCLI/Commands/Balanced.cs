@@ -1,11 +1,10 @@
 ﻿using System.Diagnostics;
+using ZisusCLI.Commands.Constants;
 
 namespace ZisusCLI.Commands {
 	internal class Balanced : BaseCommand {
-		private const string PowerSchemeGuid = "381b4222-f694-41f0-9685-ff5bb260df2e"; // Balanced
-
 		protected override void Execute() {
-			RunProcess("powercfg", $"setactive {PowerSchemeGuid}");
+			RunProcess("powercfg", $"setactive {PowerPlans.Balanced}");
 			RunProcess("control", "/name Microsoft.PowerOptions");
 		}
 
