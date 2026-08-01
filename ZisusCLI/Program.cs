@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using ZisusCLI.Commands.Constants;
 
 namespace ZisusCLI {
 	internal class Program {
@@ -12,13 +11,25 @@ namespace ZisusCLI {
 				case "amigos":
 					return new Commands.Amigos().Run();
 				case "balanced":
-					return new Commands.SetPowerPlan(PowerPlans.Balanced).Run();
-				case "psaver":
-					return new Commands.SetPowerPlan(PowerPlans.PowerSaver).Run();
+					return new Commands.SetPowerPlan(1).Run();
+				case "editalias":
+					return new Commands.EditAlias().Run();
+				case "editbats":
+					return new Commands.EditBats().Run();
 				case "extend":
-					return new Commands.Extend().Run();
+					return new Commands.SetDisplayMode(3).Run();
 				case "inputswitch":
 					return new Commands.InputSwitch().Run();
+				case "psaver":
+					return new Commands.SetPowerPlan(3).Run();
+				case "secondscreenonly":
+					return new Commands.SetDisplayMode(1).Run();
+				case "userchromeopen":
+					return new Commands.OpenUserChrome().Run();
+				case "volfix":
+					return new Commands.VolFix().Run();
+				case "weather":
+					return new Commands.Weather().Run();
 				default:
 					await Console.Out.WriteLineAsync($"Unknown command: {command}");
 					return 1;
