@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using ZisusCLI.Commands.Constants;
 
 namespace ZisusCLI {
 	internal class Program {
@@ -11,7 +12,9 @@ namespace ZisusCLI {
 				case "amigos":
 					return new Commands.Amigos().Run();
 				case "balanced":
-					return new Commands.Balanced().Run();
+					return new Commands.SetPowerPlan(PowerPlans.Balanced).Run();
+				case "psaver":
+					return new Commands.SetPowerPlan(PowerPlans.PowerSaver).Run();
 				case "extend":
 					return new Commands.Extend().Run();
 				case "inputswitch":
