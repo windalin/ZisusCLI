@@ -3,8 +3,8 @@
 namespace ZisusCLI.Commands {
 	internal class Amigos : BaseCommand {
 		protected override void Execute() {
-			Process.Start(new ProcessStartInfo("https://claude.ai") { UseShellExecute = true });
-			Process.Start(new ProcessStartInfo("https://chatgpt.com") { UseShellExecute = true });
+			var clankers = Config.Value.GetSection("Amigos:Clankers").GetChildren();
+			foreach (var clanker in clankers) Process.Start(new ProcessStartInfo(clanker.Value) { UseShellExecute = true });
 		}
 	}
 }
