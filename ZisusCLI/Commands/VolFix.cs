@@ -2,6 +2,7 @@
 using System.IO;
 using System.Media;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace ZisusCLI.Commands {
 	internal class VolFix : BaseCommand {
@@ -40,11 +41,27 @@ namespace ZisusCLI.Commands {
 		}
 	}
 
+	internal static partial class NativeMethods {
+		[LibraryImport("ole32.dll")]
+		public static partial int CoCreateInstance(
+			ref Guid rclsid,
+			IntPtr pUnkOuter,
+			uint dwClsContext,
+			ref Guid riid,
+			out IntPtr ppv);
+	}
+
 	internal class MMDeviceEnumerator {
+		private static readonly StrategyBasedComWrappers Wrappers = new();
 		private readonly IMMDeviceEnumerator enumerator;
 
 		public MMDeviceEnumerator() {
-			enumerator = (IMMDeviceEnumerator)new MMDeviceEnumeratorComObject();
+			Guid clsid = new("BCDE0395-E52F-467C-8E3D-C4579291692E");
+			Guid iid = new("A95664D2-9614-4F35-A746-DE8DB63617E6");
+
+			NativeMethods.CoCreateInstance(ref clsid, IntPtr.Zero, (uint)CLSCTX.ALL, ref iid, out IntPtr ptr);
+
+			enumerator = (IMMDeviceEnumerator)Wrappers.GetOrCreateObjectForComInstance(ptr, CreateObjectFlags.None);
 		}
 
 		public MMDevice GetDefaultAudioEndpoint() {
@@ -58,6 +75,7 @@ namespace ZisusCLI.Commands {
 	}
 
 	internal class MMDevice {
+		private static readonly StrategyBasedComWrappers Wrappers = new();
 		private readonly IMMDevice device;
 
 		public MMDevice(IMMDevice device) {
@@ -77,54 +95,42 @@ namespace ZisusCLI.Commands {
 		}
 
 		public void SetVolume(float level) {
-			device.Activate(
-				typeof(IAudioEndpointVolume).GUID,
-				CLSCTX.ALL,
-				IntPtr.Zero,
-				out var obj);
+			Guid iid = typeof(IAudioEndpointVolume).GUID;
+			device.Activate(ref iid, CLSCTX.ALL, IntPtr.Zero, out IntPtr ptr);
 
-			var volume = (IAudioEndpointVolume)obj;
+			var volume = (IAudioEndpointVolume)Wrappers.GetOrCreateObjectForComInstance(ptr, CreateObjectFlags.None);
 			volume.SetMasterVolumeLevelScalar(level, Guid.Empty);
 		}
 	}
 
-	[ComImport]
-	[Guid("BCDE0395-E52F-467C-8E3D-C4579291692E")]
-	internal class MMDeviceEnumeratorComObject { }
-
-	[ComImport]
+	[GeneratedComInterface]
 	[Guid("A95664D2-9614-4F35-A746-DE8DB63617E6")]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	internal interface IMMDeviceEnumerator {
+	internal partial interface IMMDeviceEnumerator {
 		void EnumAudioEndpoints(int dataFlow, int stateMask, out IntPtr devices);
 
 		void GetDefaultAudioEndpoint(
 			EDataFlow dataFlow,
 			ERole role,
 			out IMMDevice endpoint);
-
-		void GetDevice(string id, out IMMDevice device);
 	}
 
-	[ComImport]
+	[GeneratedComInterface]
 	[Guid("D666063F-1587-4E43-81F1-B948E807363F")]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	internal interface IMMDevice {
+	internal partial interface IMMDevice {
 		void Activate(
-			Guid iid,
+			ref Guid iid,
 			CLSCTX clsCtx,
 			IntPtr activationParams,
-			[MarshalAs(UnmanagedType.IUnknown)] out object instance);
+			out IntPtr instance);
 
 		void OpenPropertyStore(
 			int stgmAccess,
 			out IPropertyStore store);
 	}
 
-	[ComImport]
+	[GeneratedComInterface]
 	[Guid("886D8EEB-8CF2-4446-8D02-CDBA1DBDCF99")]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	internal interface IPropertyStore {
+	internal partial interface IPropertyStore {
 		void GetCount(out int count);
 
 		void GetAt(int index, out PROPERTYKEY key);
@@ -134,10 +140,9 @@ namespace ZisusCLI.Commands {
 			out PROPVARIANT value);
 	}
 
-	[ComImport]
+	[GeneratedComInterface]
 	[Guid("5CDF2C82-841E-4546-9722-0CF74078229A")]
-	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	internal interface IAudioEndpointVolume {
+	internal partial interface IAudioEndpointVolume {
 		void RegisterControlChangeNotify(IntPtr notify);
 		void UnregisterControlChangeNotify(IntPtr notify);
 		void GetChannelCount(out uint count);
@@ -177,7 +182,7 @@ namespace ZisusCLI.Commands {
 	}
 
 	[Flags]
-	internal enum CLSCTX {
+	internal enum CLSCTX : uint {
 		ALL = 23
 	}
 }
