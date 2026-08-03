@@ -3,11 +3,9 @@
 namespace ZisusCLI.Commands {
 	internal class SetDisplayMode : BaseCommand {
 		private readonly int _mode;
-
-		public SetDisplayMode(int mode) {
-			_mode = mode;
-		}
-
+		
+		public SetDisplayMode(int mode) => _mode = mode;
+		
 		protected override void Execute() {
 			string arg = _mode switch {
 				1 => "/internal",

@@ -4,9 +4,7 @@ namespace ZisusCLI.Commands {
 	internal class SetPowerPlan : BaseCommand {
 		private readonly int _plan;
 
-		public SetPowerPlan(int plan) {
-			_plan = plan;
-		}
+		public SetPowerPlan(int plan) => _plan = plan;
 
 		protected override void Execute() {
 			string guid = _plan switch {
